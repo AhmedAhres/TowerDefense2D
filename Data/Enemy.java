@@ -1,6 +1,7 @@
 package Data;
 
 import org.newdawn.slick.opengl.Texture;
+import static helpers.Clock.*;
 
 import static helpers.Artist.*;
 
@@ -9,6 +10,7 @@ public class Enemy {
 	private float speed, x, y;
 	private Tile startTile;
 	private Texture texture;
+	private boolean first = true;
 	
 	public Enemy(Texture texture, Tile startTile, int width, int height, float speed){
 		this.texture = texture;
@@ -20,6 +22,11 @@ public class Enemy {
 	}
 	public void Draw(){
 		DrawQuadTex(texture, x, y, width, height);
+	}
+	
+	public void Update() {
+		if(first) first = false;
+		else x += Delta() * speed;
 	}
 
 }
