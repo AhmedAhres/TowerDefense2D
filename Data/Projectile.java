@@ -5,23 +5,45 @@ import static helpers.Clock.*;
 import static helpers.Artist.*;
 
 public class Projectile {
-	
+
 	private Texture texture;
-	private float x, y, speed;
+	private float x, y, speed, xVelocity, yVelocity;
 	private int damage;
-	public Projectile(Texture texture, float x, float y, float speed, int damage) {
+	private Enemy target;
+
+	public Projectile(Texture texture, Enemy target, float x, float y, float speed, int damage) {
 		this.texture = texture;
 		this.x = x;
 		this.y = y;
 		this.speed = speed;
 		this.damage = damage;
+		this.target = target;
+		this.xVelocity = 0f;
+		this.yVelocity = 0f;
+		calculateDirection();
+	}
+
+	private void calculateDirection() { // for projectile to follow the enemy
+		float totalAllowedMovement = 1.0f;
+		float xDistanceFromTarget = Math.abs(target.getX() - x - Game.TILE_SIZE / 4 + Game.TILE_SIZE / 2);
+		//because x is the top left corner
+		float yDistanceFromTarget = Math.abs(target.getY() - y - Game.TILE_SIZE / 4 + Game.TILE_SIZE / 2); 
+		float totalDistanceFromTarget = xDistanceFromTarget + yDistanceFromTarget;
+		float xPercentOfMovement = xDistanceFromTarget / totalDistanceFromTarget;
+		xVelocity = xPercentOfMovement;
+		yVelocity = totalAllowedMovement - xPercentOfMovement; //since the rest of totalAllowedMovement is yPercent
+		if (target.getX() < x)
+			xVelocity *= -1;
+		if (target.getY() < y)
+			yVelocity *= -1;
 	}
 	
 	public void Update() {
-		x += Delta() * speed;
+		x += xVelocity * speed * Delta();
+		y += yVelocity * speed * Delta();
 		Draw();
 	}
-	
+
 	public void Draw() {
 		DrawQuadTex(texture, x, y, 32, 32);
 	}

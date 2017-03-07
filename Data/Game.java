@@ -8,9 +8,7 @@ public class Game {
 	private TileGrid grid;
 	private Player player;
 	private WaveManager waveManager;
-
-
-	TowerCanon tower;
+	public static final int TILE_SIZE = 64;
 
 	public Game(int[][] map) {
 
@@ -24,7 +22,6 @@ public class Game {
 		grid.Draw();
 		waveManager.Update();
 		player.Update();
-		tower.Update();
 	}
 
 }

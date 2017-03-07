@@ -2,6 +2,9 @@ package Data;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+
+import helpers.Clock;
+
 import static helpers.Artist.*;
 
 import java.util.ArrayList;
@@ -13,6 +16,9 @@ public class Player {
 	private int index;
 	private WaveManager waveManager;
 	private ArrayList<TowerCanon> towerList;
+	private boolean leftMouseButtonDown; // because update is too fast so a
+											// click would be 4 clicks without
+											// this boolean
 
 	public Player(TileGrid grid, WaveManager waveManager) {
 		this.grid = grid;
@@ -31,20 +37,23 @@ public class Player {
 	}
 
 	public void Update() {
-		for (TowerCanon t: towerList) {
+		for (TowerCanon t : towerList) {
 			t.Update();
 		}
-		
-		//Handle Mouse Input
-		if (Mouse.isButtonDown(0)) {
-			setTile();
+
+		// Handle Mouse Input
+		if (Mouse.isButtonDown(0) && !leftMouseButtonDown) { //0 is left mouse
+			towerList.add(new TowerCanon(QuickLoad("cannonBase"), grid.GetTile(Mouse.getX() / 64, (HEIGHT - Mouse.getY() - 1) / 64), 10,
+					waveManager.getCurrentWave().getEnemyList()));
 		}
+
+		leftMouseButtonDown = Mouse.isButtonDown(0);
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKey() == Keyboard.KEY_RIGHT && Keyboard.getEventKeyState()) {
-				moveIndex();
+				Clock.ChangeMultiplier(0.2f); //speed of game increase
 			}
-			if (Keyboard.getEventKey() == Keyboard.KEY_T && Keyboard.getEventKeyState()) {
-				towerList.add(new TowerCanon(QuickLoad("cannonBase"), grid.GetTile(18, 9), 10, waveManager.getCurrentWave().getEnemyList()));
+			if (Keyboard.getEventKey() == Keyboard.KEY_LEFT && Keyboard.getEventKeyState()) {
+				Clock.ChangeMultiplier(-0.2f); //speed of game decrease
 			}
 		}
 	}

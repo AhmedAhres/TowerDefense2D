@@ -39,14 +39,18 @@ public class TowerCanon {
 	}
 
 	private float calculateAngle() { // calculate angle for tower to shoot enemy
-		//x and y are position of tower that shoots
-	    double angleTemp = Math.atan2(target.getY() - y, target.getX() - x); 
+		// x and y are position of tower that shoots
+
+		double angleTemp = Math.atan2(target.getY() - y, target.getX() - x);
 		return (float) Math.toDegrees(angleTemp) - 90;
+
 	}
 
 	private void Shoot() {
 		timeSinceLastShot = 0;
-		projectiles.add(new Projectile(QuickLoad("bullet"), x + 32, y + 32, 50, 10));
+		//bullet needs to spawn in the center of the tile where the tower is, so we need calculations to find the center
+		projectiles.add(new Projectile(QuickLoad("bullet"), target, x + Game.TILE_SIZE / 2 - Game.TILE_SIZE / 4
+				, y + Game.TILE_SIZE / 2 - Game.TILE_SIZE / 4, 900, 10)); 
 	}
 
 	public void Update() {
@@ -55,9 +59,8 @@ public class TowerCanon {
 		if (timeSinceLastShot > firingSpeed)
 			Shoot();
 
-		for (Projectile p: projectiles) 
+		for (Projectile p : projectiles)
 			p.Update();
-		
 
 		angle = calculateAngle();
 		Draw();
@@ -65,7 +68,7 @@ public class TowerCanon {
 
 	public void Draw() {
 		DrawQuadTex(baseTexture, x, y, width, height);
-		DrawQuadTexRot(cannonTexture, x, y, width, height, 240);
+		DrawQuadTexRot(cannonTexture, x, y, width, height, angle);
 	}
 
 }
