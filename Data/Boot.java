@@ -12,6 +12,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.opengl.Texture;
 
 import helpers.Clock;
+import helpers.StateManager;
 
 import static helpers.Artist.*;
 
@@ -44,11 +45,12 @@ public class Boot {
 
 		
 		
-		Game game = new Game(map);
+		//Game game = new Game(map);
 		while (!Display.isCloseRequested()) {
 			Clock.update();
 
-			game.Update();
+			//game.Update();
+			StateManager.update();
 
 			Display.update();
 			Display.sync(60);
