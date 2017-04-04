@@ -1,7 +1,5 @@
 package Data;
 
-import java.util.ArrayList;
-
 public class WaveManager {
 
 	private float timeSinceLastWave, timeBetweenEnemies;
@@ -23,7 +21,7 @@ public class WaveManager {
 	public void Update() {
 
 		if (!currentWave.isCompleted())
-			currentWave.Update();
+			currentWave.update();
 		else
 			newWave();
 
@@ -33,11 +31,9 @@ public class WaveManager {
 		currentWave = new Wave(enemyType, timeBetweenEnemies, enemiesPerWave);
 		waveNumber++;
 	}
-	
+
 	public Wave getCurrentWave() {
 		return currentWave;
 	}
-	
-
 
 }

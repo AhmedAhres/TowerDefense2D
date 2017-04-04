@@ -1,27 +1,26 @@
 package Data;
 
 import org.newdawn.slick.opengl.Texture;
-
 import static helpers.Clock.*;
-
 import java.util.ArrayList;
-
-import static Data.TileGrid.*;
 import static helpers.Artist.*;
 
-public class Enemy {
-	private int width, height, health, currentCheckpoint;
-	private float speed, x, y;
+public class Enemy implements Entity {
+	private int width, height, currentCheckpoint;
+	private float speed, x, y, health, startHealth;
 	private Tile startTile;
-	private Texture texture;
+	private Texture texture, healthBackground, healthForeground, healthBorder;
 	private boolean first = true, alive = true;
 	private TileGrid grid;
 
 	private ArrayList<CheckPoint> checkpoints;
 	private int[] directions;
 
-	public Enemy(Texture texture, Tile startTile, TileGrid grid, int width, int height, float speed) {
+	public Enemy(Texture texture, Tile startTile, TileGrid grid, int width, int height, float speed, float health) {
 		this.texture = texture;
+		this.healthBackground = QuickLoad("healthbackground");
+		this.healthForeground = QuickLoad("healthforeground");
+		this.healthBorder = QuickLoad("healthborder");
 		this.startTile = startTile;
 		this.grid = grid;
 		this.x = startTile.getX();
@@ -29,6 +28,8 @@ public class Enemy {
 		this.width = width;
 		this.height = height;
 		this.speed = speed;
+		this.health = health;
+		this.startHealth = health;
 		this.checkpoints = new ArrayList<CheckPoint>();
 		this.directions = new int[2];
 
@@ -37,12 +38,12 @@ public class Enemy {
 
 		// y direction
 		this.directions[1] = 0;
-		directions = FindNextD(startTile);
+		directions = findNextD(startTile);
 		this.currentCheckpoint = 0;
-		PopulateCheckpointList();
+		populateCheckpointList();
 	}
 
-	private boolean CheckpointReached() {
+	private boolean checkpointReached() {
 		boolean reached = false;
 		Tile t = checkpoints.get(currentCheckpoint).getTile();
 		if (x > t.getX() - 3 && x < t.getX() + 3 && y > t.getY() - 3 && y < t.getY() + 3) {
@@ -57,13 +58,13 @@ public class Enemy {
 	}
 
 	// enemy pathfinding
-	private void PopulateCheckpointList() {
-		checkpoints.add(FindNextC(startTile, directions = FindNextD(startTile)));
+	private void populateCheckpointList() {
+		checkpoints.add(FindNextC(startTile, directions = findNextD(startTile)));
 
 		int counter = 0;
 		boolean cont = true;
 		while (cont) {
-			int[] currentD = FindNextD(checkpoints.get(counter).getTile());
+			int[] currentD = findNextD(checkpoints.get(counter).getTile());
 			// Check fi a next direction/checkpoints exists, end after 20
 			// checkpoints (arbitrary)
 			if (currentD[0] == 2 || counter == 20) {
@@ -71,25 +72,29 @@ public class Enemy {
 								// directions found
 			} else {
 				checkpoints.add(FindNextC(checkpoints.get(counter).getTile(),
-						directions = FindNextD(checkpoints.get(counter).getTile())));
+						directions = findNextD(checkpoints.get(counter).getTile())));
 			}
 			counter++;
 		}
 
 	}
 
-	public void Draw() {
+	public void draw() {
+		float healthPercentage = health / startHealth;
 		DrawQuadTex(texture, x, y, width, height);
+		DrawQuadTex(healthBackground, x, y - 16, width, 8);
+		DrawQuadTex(healthForeground, x, y - 16, TILE_SIZE * healthPercentage, 8);
+		DrawQuadTex(healthBorder, x, y - 16, width, 8);
 	}
 
-	public void Update() {
+	public void update() {
 		if (first)
 			first = false;
 
 		else {
-			if (CheckpointReached()) {
+			if (checkpointReached()) {
 				if (currentCheckpoint + 1 == checkpoints.size())
-					Die();
+					endOfMazeReached();
 				else
 					currentCheckpoint++;
 			} else { // move them
@@ -98,6 +103,11 @@ public class Enemy {
 			}
 
 		}
+	}
+	
+	private void endOfMazeReached() {
+		Player.modifyLives(-1);
+		die();
 	}
 
 	// Finding the checkpoint i.e corner to stop
@@ -112,10 +122,10 @@ public class Enemy {
 
 			if (s.getXPlace() + dir[0] * counter == grid.getTilesWide()
 					|| s.getYPlace() + dir[1] * counter == grid.getTilesHigh() || s.getType() != grid
-							.GetTile(s.getXPlace() + dir[0] * counter, s.getYPlace() + dir[1] * counter).getType()) {
+							.getTile(s.getXPlace() + dir[0] * counter, s.getYPlace() + dir[1] * counter).getType()) {
 				found = true;
 				counter -= 1;
-				next = grid.GetTile(s.getXPlace() + dir[0] * counter, s.getYPlace() + dir[1] * counter);
+				next = grid.getTile(s.getXPlace() + dir[0] * counter, s.getYPlace() + dir[1] * counter);
 			}
 			counter++;
 
@@ -125,12 +135,12 @@ public class Enemy {
 		return c;
 	}
 
-	private int[] FindNextD(Tile start) { // Find Next Direction
+	private int[] findNextD(Tile start) { // Find Next Direction
 		int[] dir = new int[2];
-		Tile u = grid.GetTile(start.getXPlace(), start.getYPlace() - 1); // up
-		Tile d = grid.GetTile(start.getXPlace(), start.getYPlace() + 1); // down
-		Tile r = grid.GetTile(start.getXPlace() + 1, start.getYPlace()); // right
-		Tile l = grid.GetTile(start.getXPlace() - 1, start.getYPlace()); // left
+		Tile u = grid.getTile(start.getXPlace(), start.getYPlace() - 1); // up
+		Tile d = grid.getTile(start.getXPlace(), start.getYPlace() + 1); // down
+		Tile r = grid.getTile(start.getXPlace() + 1, start.getYPlace()); // right
+		Tile l = grid.getTile(start.getXPlace() - 1, start.getYPlace()); // left
 
 		// choose which directions to go to when finding a corner
 		if (start.getType() == u.getType() && directions[1] != 1) {
@@ -152,7 +162,15 @@ public class Enemy {
 		return dir;
 	}
 
-	private void Die() { // killing the enemy
+	public void damage(int amount) { // damage from projectiles
+		health -= amount;
+		if (health <= 0) {
+			die();
+		}
+		Player.modifyCash(5);
+	}
+
+	private void die() { // killing the enemy
 		alive = false;
 	}
 
@@ -180,7 +198,7 @@ public class Enemy {
 		this.height = height;
 	}
 
-	public int getHealth() {
+	public float getHealth() {
 		return health;
 	}
 

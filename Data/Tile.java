@@ -1,16 +1,16 @@
 package Data;
 
 import org.newdawn.slick.opengl.Texture;
-
 import static helpers.Artist.*;
 
 public class Tile {
 
-	private float x, y, width, height;
+	private float x, y;
 	private Texture texture;
 	private TileType type;
+	private int width, height;
 
-	public Tile(float x, float y, float width, float height, TileType type) {
+	public Tile(float x, float y, int width, int height, TileType type) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -35,19 +35,19 @@ public class Tile {
 		this.y = y;
 	}
 
-	public float getWidth() {
+	public int getWidth() {
 		return width;
 	}
 
-	public void setWidth(float width) {
+	public void setWidth(int width) {
 		this.width = width;
 	}
 
-	public float getHeight() {
+	public int getHeight() {
 		return height;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(int height) {
 		this.height = height;
 	}
 
@@ -56,14 +56,14 @@ public class Tile {
 	}
 
 	public int getXPlace() {
-		return (int) x / 64;
+		return (int) x / TILE_SIZE;
 	}
 
 	public int getYPlace() {
-		return (int) y / 64;
+		return (int) y / TILE_SIZE;
 	}
 
-	public void Draw() {
+	public void draw() {
 		DrawQuadTex(texture, x, y, width, height);
 	}
 

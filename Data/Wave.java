@@ -1,13 +1,15 @@
 package Data;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import static helpers.Clock.*;
 
 public class Wave {
 
 	private float timeSinceLastSpawn, spawnTime;
 	private Enemy enemyType;
-	private ArrayList<Enemy> enemyList;
+	private CopyOnWriteArrayList<Enemy> enemyList; //because else towers keep shooting at enemy even if he is dead
 	private int enemiesPerWave;
 	private boolean waveCompleted;
 
@@ -16,31 +18,32 @@ public class Wave {
 		this.spawnTime = spawnTime;
 		this.enemiesPerWave = enemiesPerWave;
 		this.timeSinceLastSpawn = 0;
-		this.enemyList = new ArrayList<Enemy>();
+		this.enemyList = new CopyOnWriteArrayList<Enemy>();
 		this.waveCompleted = false;
-		Spawn();
+		spawn();
 	}
 
-	private void Spawn() {
+	private void spawn() {
 		enemyList.add(new Enemy(enemyType.getTexture(), enemyType.getStartTile(), enemyType.getTileGrid(), 64, 64,
-				enemyType.getSpeed()));
+				enemyType.getSpeed(), enemyType.getHealth()));
 	}
 
-	public void Update() {
+	public void update() {
 		boolean allEnemiesDead = true; // assume that all enemies are dead
 		if (enemyList.size() < enemiesPerWave) {
 			timeSinceLastSpawn += Delta();
 			if (timeSinceLastSpawn > spawnTime) {
-				Spawn();
+				spawn();
 				timeSinceLastSpawn = 0;
 			}
 		}
 		for (Enemy e : enemyList) {
 			if (e.isAlive()) {
 				allEnemiesDead = false; // there is at least one alive
-				e.Update();
-				e.Draw();
-			}
+				e.update();
+				e.draw();
+			} else
+				enemyList.remove(e);
 		}
 
 		if (allEnemiesDead) {
@@ -52,7 +55,7 @@ public class Wave {
 		return waveCompleted;
 	}
 	
-	public ArrayList<Enemy> getEnemyList() {
+	public CopyOnWriteArrayList<Enemy> getEnemyList() {
 		return enemyList;
 	}
 
