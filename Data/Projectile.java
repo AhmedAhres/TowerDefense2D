@@ -12,15 +12,14 @@ public abstract class Projectile implements Entity {
 	private boolean alive;
 	private Enemy target;
 
-	public Projectile(Texture texture, Enemy target, float x, float y, int width, int height, float speed,
-			int damage) {
-		this.texture = texture;
+	public Projectile(ProjectileType type, Enemy target, float x, float y, int width, int height) {
+		this.texture = type.texture;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.speed = speed;
-		this.damage = damage;
+		this.speed = type.speed;
+		this.damage = type.damage;
 		this.target = target;
 		this.alive = true;
 		this.xVelocity = 0f;
@@ -36,16 +35,15 @@ public abstract class Projectile implements Entity {
 		float totalDistanceFromTarget = xDistanceFromTarget + yDistanceFromTarget;
 		float xPercentOfMovement = xDistanceFromTarget / totalDistanceFromTarget;
 		xVelocity = xPercentOfMovement;
-		yVelocity = totalAllowedMovement - xPercentOfMovement; // since the rest
-																// of
-																// totalAllowedMovement
-																// is yPercent
+		yVelocity = totalAllowedMovement - xPercentOfMovement; 
+		// Set direction based on position of target relative to tower
 		if (target.getX() < x)
 			xVelocity *= -1;
 		if (target.getY() < y)
 			yVelocity *= -1;
 	}
 	
+	// Deal damage to Enemy
 	public void damage() {
 		target.damage(damage);
 		alive = false;
@@ -53,6 +51,7 @@ public abstract class Projectile implements Entity {
 
 	public void update() {
 		if (alive) {
+			calculateDirection();
 			x += xVelocity * speed * Delta();
 			y += yVelocity * speed * Delta();
 			if (CheckCollision(x, y, width, height, target.getX(), target.getY(), target.getWidth(),

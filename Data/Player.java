@@ -13,11 +13,10 @@ public class Player {
 	private WaveManager waveManager;
 	private ArrayList<Tower> towerList;
 	public static int Cash, Lives;
-	private boolean leftMouseButtonDown, rightMouseButtonDown; // because update
-																// is too fast
-																// so a
-	// click would be 4 clicks without
-	// these booleans
+	private boolean leftMouseButtonDown, holdingTower;
+	private Tower tempTower;
+	// Since updated is too fast, so a click would be actually 4 clicks without
+	// this boolean
 
 	public Player(TileGrid grid, WaveManager waveManager) {
 		this.grid = grid;
@@ -28,16 +27,19 @@ public class Player {
 		this.waveManager = waveManager;
 		this.towerList = new ArrayList<Tower>();
 		this.leftMouseButtonDown = false;
-		this.rightMouseButtonDown = false;
+		this.holdingTower = false;
+		this.tempTower = null;
 		Cash = 0;
 		Lives = 0;
 	}
 
+	// Initialize cash and lives
 	public void setup() {
-		Cash = 50;
+		Cash = 200;
 		Lives = 10;
 	}
 
+	//Check if we can afford the tower
 	public static boolean modifyCash(int amount) {
 		if (Cash + amount >= 0) {
 			Cash += amount;
@@ -51,6 +53,15 @@ public class Player {
 	}
 
 	public void Update() {
+
+		// Update holding tower for when picking up to place them
+		if (holdingTower) {
+			tempTower.setX(getMouseTile().getX());
+			tempTower.setY(getMouseTile().getY());
+			tempTower.draw();
+		}
+
+		// Update all towers in the game
 		for (Tower t : towerList) {
 			t.update();
 			t.draw();
@@ -59,24 +70,10 @@ public class Player {
 
 		// Handle Mouse Input
 		if (Mouse.isButtonDown(0) && !leftMouseButtonDown) { // 0 is left mouse
-			if (modifyCash(-20)) {
-				towerList.add(new TowerCannonBlue(TowerType.CannonBlue,
-						grid.getTile(Mouse.getX() / TILE_SIZE, (HEIGHT - Mouse.getY() - 1) / TILE_SIZE),
-						waveManager.getCurrentWave().getEnemyList()));
-			}
-		}
-
-		if (Mouse.isButtonDown(1) && !rightMouseButtonDown) { // 1 is right
-																// mouse
-			if (modifyCash(-55)) {
-				towerList.add(new TowerIce(TowerType.CannonIce,
-						grid.getTile(Mouse.getX() / TILE_SIZE, (HEIGHT - Mouse.getY() - 1) / TILE_SIZE),
-						waveManager.getCurrentWave().getEnemyList()));
-			}
+			placeTower();
 		}
 
 		leftMouseButtonDown = Mouse.isButtonDown(0);
-		rightMouseButtonDown = Mouse.isButtonDown(1);
 
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKey() == Keyboard.KEY_RIGHT && Keyboard.getEventKeyState()) {
@@ -86,6 +83,27 @@ public class Player {
 				Clock.ChangeMultiplier(-0.2f); // speed of game decrease
 			}
 		}
+	}
+
+	public void pickTower(Tower t) {
+		tempTower = t;
+		holdingTower = true;
+	}
+
+	private void placeTower() {
+		Tile currentTile = getMouseTile();
+		if (holdingTower) 
+			if (!currentTile.getOccupied() && modifyCash(- tempTower.getPrice()))  {
+				towerList.add(tempTower);
+				currentTile.setOccupied(true);
+				holdingTower = false;
+				tempTower = null;
+			}
+		
+	}
+
+	private Tile getMouseTile() {
+		return grid.getTile(Mouse.getX() / TILE_SIZE, (HEIGHT - Mouse.getY() - 1) / TILE_SIZE);
 	}
 
 }

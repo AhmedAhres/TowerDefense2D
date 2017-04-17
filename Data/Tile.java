@@ -9,6 +9,7 @@ public class Tile {
 	private Texture texture;
 	private TileType type;
 	private int width, height;
+	private boolean occupied; //so that we do not put more than one tower per tile
 
 	public Tile(float x, float y, int width, int height, TileType type) {
 		this.x = x;
@@ -17,6 +18,10 @@ public class Tile {
 		this.height = height;
 		this.type = type;
 		this.texture = QuickLoad(type.textureName);
+		if (type.buildable) 
+			occupied = false; 
+		else 
+			occupied = true;
 	}
 
 	public float getX() {
@@ -77,6 +82,14 @@ public class Tile {
 
 	public void setType(TileType type) {
 		this.type = type;
+	}
+	
+	public boolean getOccupied() {
+		return occupied;
+	}
+	
+	public void setOccupied(boolean occupied) {
+		this.occupied = occupied;
 	}
 
 }

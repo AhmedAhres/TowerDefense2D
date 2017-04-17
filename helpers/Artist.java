@@ -19,11 +19,11 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Artist {
 
-	public static final int WIDTH = 1280, HEIGHT = 960;
+	public static final int WIDTH = 1472, HEIGHT = 960;
 	public static final int TILE_SIZE = 64;
 
 	public static void BeginSession() {
-		Display.setTitle("Towfense2D");
+		Display.setTitle("Tower Defense2D");
 		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 			Display.create();

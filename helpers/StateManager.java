@@ -3,6 +3,9 @@ package helpers;
 import Data.Game;
 import Data.Editor;
 import Data.MainMenu;
+import Data.TileGrid;
+
+import static helpers.Leveler.LoadMap;
 
 public class StateManager {
 	
@@ -15,24 +18,11 @@ public class StateManager {
 	public static Game game;
 	public static Editor editor;
 	
-	static int[][] map = 
-		  { { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-			{ 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0 },
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 1 },
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1 },
-			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 1, 1, 1 },
-
-	};
+	public static long nextSecond = System.currentTimeMillis() + 1000;
+	public static int framesInLastSecond = 0;
+	public static int framesInCurrentSecond = 0;
+	
+	static TileGrid map = LoadMap("mapTest1");
 	
 	public static void update() {
 		switch (gameState) {
@@ -53,6 +43,15 @@ public class StateManager {
 			editor.update();
 			break;
 		}
+		
+		long currentTime = System.currentTimeMillis();
+		if (currentTime > nextSecond) {
+			nextSecond += 1000;
+			framesInLastSecond = framesInCurrentSecond;
+			framesInCurrentSecond = 0;
+		}
+		
+		framesInCurrentSecond++;
 	}
 	
 	public static void setState (GameState newState) {

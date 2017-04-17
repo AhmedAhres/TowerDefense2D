@@ -2,10 +2,9 @@ package Data;
 
 import org.newdawn.slick.opengl.Texture;
 
+
 import static helpers.Artist.DrawQuadTex;
 import static helpers.Artist.DrawQuadTexRot;
-import static helpers.Artist.QuickLoad;
-import static helpers.Artist.TILE_SIZE;
 import static helpers.Clock.Delta;
 
 import java.util.ArrayList;
@@ -14,17 +13,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class Tower implements Entity {
 
 	private float x, y, timeSinceLastShot, firingSpeed, angle;
-	private int width, height, damage, range;
-	private Enemy target;
+	private int width, height, range, price;
+	public Enemy target;
 	private Texture[] textures;
 	private CopyOnWriteArrayList<Enemy> enemies;
 	private boolean targeted;
-	private ArrayList<Projectile> projectiles;
+	public ArrayList<Projectile> projectiles;
+	public TowerType type;
 	
 	public Tower(TowerType type, Tile startTile, CopyOnWriteArrayList<Enemy> enemies) {
+		this.type = type;
 		this.textures = type.textures;
-		this.damage = type.damage;
 		this.range = type.range;
+		this.price = type.price;
 		this.x = startTile.getX();
 		this.y = startTile.getY();
 		this.width = startTile.getWidth();
@@ -40,26 +41,24 @@ public abstract class Tower implements Entity {
 	
 	private Enemy acquireTarget() {
 		Enemy closest = null;
+		// Arbitrary distance to help with sorting Enemy distances
 		float closestDistance = 10000;
+		// For every enemy in enemies, return nearest one
 		for (Enemy e : enemies) {
-			if (isInRange(e) && findDistance(e) < closestDistance && e.isAlive()) {
+			if (isInRange(e) && findDistance(e) < closestDistance && e.getHiddenHealth() >= 0) {
 				closestDistance = findDistance(e);
 				closest = e;
 			}
 		}
+		
+		// If an enemy exists and is returned, target = true 
 		if (closest != null) {
 			targeted = true;
 		}
 		return closest;
 	}
 	
-	public void Shoot() {
-		timeSinceLastShot = 0;
-		// bullet needs to spawn in the center of the tile where the tower is,
-		// so we need calculations to find the center
-		projectiles.add(new ProjectileIceBall(QuickLoad("icegun"), target, x + TILE_SIZE / 2 - TILE_SIZE / 4,
-				y + TILE_SIZE / 2 - TILE_SIZE / 4, 32, 32, 900, 10));
-	}
+	public abstract void shoot(Enemy target); 
 	
 	private boolean isInRange(Enemy e) { // range of enemy when getting shot
 		float xDistance = Math.abs(e.getX() - x);
@@ -89,10 +88,14 @@ public abstract class Tower implements Entity {
 	public void update() {
 
 		if (!targeted) {
+			if (!targeted || target.getHiddenHealth() <= 0)
 			target = acquireTarget();
 		} else {
-			if (timeSinceLastShot > firingSpeed)
-				Shoot();
+			angle = calculateAngle();
+			if (timeSinceLastShot > firingSpeed) {
+				shoot(target);
+				timeSinceLastShot = 0;
+			}
 		}
 
 		if (target == null || target.isAlive() == false) {
@@ -103,8 +106,6 @@ public abstract class Tower implements Entity {
 
 		for (Projectile p : projectiles)
 			p.update();
-
-		angle = calculateAngle();
 		draw();
 	}
 
@@ -151,5 +152,9 @@ public abstract class Tower implements Entity {
 	
 	public Enemy getTarget() {
 		return target;
+	}
+	
+	public int getPrice() {
+		return price;
 	}
 }

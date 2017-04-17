@@ -8,10 +8,10 @@ import static helpers.Clock.*;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class TowerCanon {
+public class TowerCannon {
 
 	private float x, y, timeSinceLastShot, firingSpeed, angle;
-	private int width, height, damage, range;
+	private int width, height, range;
 	private Texture baseTexture, cannonTexture;
 	private Tile startTile;
 	private ArrayList<Projectile> projectiles;
@@ -19,7 +19,7 @@ public class TowerCanon {
 	private Enemy target; // tracking enemy to shoot him
 	private boolean targeted;
 
-	public TowerCanon(Texture baseTexture, Tile startTile, int damage, int range, CopyOnWriteArrayList<Enemy> enemies) {
+	public TowerCannon(Texture baseTexture, Tile startTile, int damage, int range, CopyOnWriteArrayList<Enemy> enemies) {
 		this.baseTexture = baseTexture;
 		this.cannonTexture = QuickLoad("cannonGun");
 		this.startTile = startTile;
@@ -27,7 +27,6 @@ public class TowerCanon {
 		this.y = startTile.getY();
 		this.width = (int) startTile.getWidth();
 		this.height = (int) startTile.getHeight();
-		this.damage = damage;
 		this.range = range;
 		this.firingSpeed = 3;
 		this.timeSinceLastShot = 0;
@@ -81,8 +80,8 @@ public class TowerCanon {
 		timeSinceLastShot = 0;
 		// bullet needs to spawn in the center of the tile where the tower is,
 		// so we need calculations to find the center
-		projectiles.add(new ProjectileIceBall(QuickLoad("icegun"), target, x + TILE_SIZE / 2 - TILE_SIZE / 4,
-				y + TILE_SIZE / 2 - TILE_SIZE / 4, 32, 32, 900, 10));
+		//projectiles.add(new ProjectileIceBall(QuickLoad("icegun"), target, x + TILE_SIZE / 2 - TILE_SIZE / 4,
+				//y + TILE_SIZE / 2 - TILE_SIZE / 4, 32, 32, 900, 10));
 	}
 
 	public void Update() {

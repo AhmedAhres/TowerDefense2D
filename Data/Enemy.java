@@ -7,14 +7,40 @@ import static helpers.Artist.*;
 
 public class Enemy implements Entity {
 	private int width, height, currentCheckpoint;
-	private float speed, x, y, health, startHealth;
+	private float speed, x, y, health, startHealth, hiddenHealth;
 	private Tile startTile;
 	private Texture texture, healthBackground, healthForeground, healthBorder;
-	private boolean first = true, alive = true;
+	private boolean first, alive;
 	private TileGrid grid;
-
 	private ArrayList<CheckPoint> checkpoints;
 	private int[] directions;
+	
+	//Default constructor
+	public Enemy(int tileX, int tileY, TileGrid grid) {
+		this.texture = QuickLoad("flyenemy");
+		this.healthBackground = QuickLoad("healthbackground");
+		this.healthForeground = QuickLoad("healthforeground");
+		this.healthBorder = QuickLoad("healthborder");
+		this.startTile = grid.getTile(tileX, tileY);
+		this.x = startTile.getX();
+		this.y = startTile.getY();
+		this.width = TILE_SIZE;
+		this.height = TILE_SIZE;
+		this.speed = 50;
+		this.health = 50;
+		this.startHealth = health;
+		this.hiddenHealth = health;
+		this.grid = grid;
+		this.checkpoints = new ArrayList<CheckPoint>();
+		this.directions = new int[2];
+		// x direction
+		this.directions[0] = 0;
+		// y direction
+		this.directions[1] = 0;
+		directions = findNextD(startTile);
+		this.currentCheckpoint = 0;
+		populateCheckpointList();
+	}
 
 	public Enemy(Texture texture, Tile startTile, TileGrid grid, int width, int height, float speed, float health) {
 		this.texture = texture;
@@ -22,7 +48,8 @@ public class Enemy implements Entity {
 		this.healthForeground = QuickLoad("healthforeground");
 		this.healthBorder = QuickLoad("healthborder");
 		this.startTile = startTile;
-		this.grid = grid;
+		this.first = true;
+		this.alive = true;
 		this.x = startTile.getX();
 		this.y = startTile.getY();
 		this.width = width;
@@ -30,6 +57,8 @@ public class Enemy implements Entity {
 		this.speed = speed;
 		this.health = health;
 		this.startHealth = health;
+		this.hiddenHealth = health;
+		this.grid = grid;
 		this.checkpoints = new ArrayList<CheckPoint>();
 		this.directions = new int[2];
 
@@ -59,13 +88,14 @@ public class Enemy implements Entity {
 
 	// enemy pathfinding
 	private void populateCheckpointList() {
+		// Add first checkpoint manually based on startTile
 		checkpoints.add(FindNextC(startTile, directions = findNextD(startTile)));
 
 		int counter = 0;
 		boolean cont = true;
 		while (cont) {
 			int[] currentD = findNextD(checkpoints.get(counter).getTile());
-			// Check fi a next direction/checkpoints exists, end after 20
+			// Check if a next direction/checkpoints exists, end after 20
 			// checkpoints (arbitrary)
 			if (currentD[0] == 2 || counter == 20) {
 				cont = false; // cannot continue anymore because it refers to no
@@ -88,16 +118,19 @@ public class Enemy implements Entity {
 	}
 
 	public void update() {
+
+		// Check if it's the first time this class is updated, if so do nothing
 		if (first)
 			first = false;
-
 		else {
 			if (checkpointReached()) {
+				// Check if there are more checkpoints before moving on
 				if (currentCheckpoint + 1 == checkpoints.size())
 					endOfMazeReached();
 				else
 					currentCheckpoint++;
-			} else { // move them
+			} else { 
+				// If not at a checkpoint, continue in current checkpoint
 				x += Delta() * checkpoints.get(currentCheckpoint).getxDirection() * speed;
 				y += Delta() * checkpoints.get(currentCheckpoint).getyDirection() * speed;
 			}
@@ -105,6 +138,7 @@ public class Enemy implements Entity {
 		}
 	}
 	
+	//Run when last checkpoint is reached by enemy
 	private void endOfMazeReached() {
 		Player.modifyLives(-1);
 		die();
@@ -124,6 +158,7 @@ public class Enemy implements Entity {
 					|| s.getYPlace() + dir[1] * counter == grid.getTilesHigh() || s.getType() != grid
 							.getTile(s.getXPlace() + dir[0] * counter, s.getYPlace() + dir[1] * counter).getType()) {
 				found = true;
+				// Decrement counter to find tile before new tiletype
 				counter -= 1;
 				next = grid.getTile(s.getXPlace() + dir[0] * counter, s.getYPlace() + dir[1] * counter);
 			}
@@ -142,7 +177,7 @@ public class Enemy implements Entity {
 		Tile r = grid.getTile(start.getXPlace() + 1, start.getYPlace()); // right
 		Tile l = grid.getTile(start.getXPlace() - 1, start.getYPlace()); // left
 
-		// choose which directions to go to when finding a corner
+		// Check if current inhabited tiletype matches tiletype above, right, down or left
 		if (start.getType() == u.getType() && directions[1] != 1) {
 			dir[0] = 0;
 			dir[1] = -1;
@@ -162,7 +197,8 @@ public class Enemy implements Entity {
 		return dir;
 	}
 
-	public void damage(int amount) { // damage from projectiles
+	// Take damage from external source
+	public void damage(int amount) { 
 		health -= amount;
 		if (health <= 0) {
 			die();
@@ -180,6 +216,14 @@ public class Enemy implements Entity {
 
 	public void setAlive(boolean alive) {
 		this.alive = alive;
+	}
+	
+	public void reduceHiddenHealth(float amount) {
+		hiddenHealth -= amount;
+	}
+	
+	public float getHiddenHealth() {
+		return hiddenHealth;
 	}
 
 	public int getWidth() {
@@ -244,6 +288,10 @@ public class Enemy implements Entity {
 
 	public Texture getTexture() {
 		return texture;
+	}
+	
+	public void setTexture(String textureName) {
+		this.texture = QuickLoad(textureName);
 	}
 
 	public void setTexture(Texture texture) {
