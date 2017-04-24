@@ -7,7 +7,8 @@ import static helpers.Artist.*;
 
 public class Enemy implements Entity {
 	private int width, height, currentCheckpoint;
-	private float speed, x, y, health, startHealth, hiddenHealth;
+	private float x, y, health, startHealth, hiddenHealth;
+	private double speed;
 	private Tile startTile;
 	private Texture texture, healthBackground, healthForeground, healthBorder;
 	private boolean first, alive;
@@ -42,7 +43,7 @@ public class Enemy implements Entity {
 		populateCheckpointList();
 	}
 
-	public Enemy(Texture texture, Tile startTile, TileGrid grid, int width, int height, float speed, float health) {
+	public Enemy(Texture texture, Tile startTile, TileGrid grid, int width, int height, double speed, float health) {
 		this.texture = texture;
 		this.healthBackground = QuickLoad("healthbackground");
 		this.healthForeground = QuickLoad("healthforeground");
@@ -141,6 +142,7 @@ public class Enemy implements Entity {
 	//Run when last checkpoint is reached by enemy
 	private void endOfMazeReached() {
 		Player.modifyLives(-1);
+		Player.modifyScore(-10);
 		die();
 	}
 
@@ -207,6 +209,7 @@ public class Enemy implements Entity {
 	}
 
 	private void die() { // killing the enemy
+		Player.modifyScore(10);
 		alive = false;
 	}
 
@@ -254,11 +257,11 @@ public class Enemy implements Entity {
 		this.health = health;
 	}
 
-	public float getSpeed() {
+	public double getSpeed() {
 		return speed;
 	}
 
-	public void setSpeed(float speed) {
+	public void setSpeed(double speed) {
 		this.speed = speed;
 	}
 

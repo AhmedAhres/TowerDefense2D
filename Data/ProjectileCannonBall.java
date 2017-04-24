@@ -9,7 +9,6 @@ public class ProjectileCannonBall extends Projectile {
 	
 	@Override
 	public void damage() {
-		//super.getTarget().setSpeed(4f);
 		super.damage();
 	}
 	

@@ -9,7 +9,8 @@ public class ProjectileIceBall extends Projectile {
 	
 	@Override
 	public void damage() {
-		super.getTarget().setSpeed(4f);
+		//Divide speed of enemy by 1.1 each time
+		super.getTarget().setSpeed(getTarget().getSpeed()/1.1);
 		super.damage();
 	}
 	

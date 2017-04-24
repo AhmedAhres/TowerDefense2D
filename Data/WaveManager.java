@@ -32,6 +32,10 @@ public class WaveManager {
 		return currentWave;
 	}
 	
+	public int getEnemiesPerWave() {
+		return enemiesPerWave;
+	}
+	
 	public int getWaveNumber() {
 		return waveNumber;
 	}

@@ -17,9 +17,9 @@ public class MainMenu {
 	public MainMenu() {
 		background = QuickLoad("mainmenu");
 		menuUI = new UI();
-		menuUI.addButton("Play", "play", WIDTH / 2 - 128, (int) (HEIGHT * 0.45f)); // -128 for the center																			
-		menuUI.addButton("Editor", "editor", WIDTH / 2 - 128, (int) (HEIGHT * 0.55f));
-		menuUI.addButton("Quit", "quit", WIDTH / 2 - 128, (int) (HEIGHT * 0.65f));
+		menuUI.addButton("Play", "play", WIDTH / 2 - 128, (int) (HEIGHT * 0.40f)); // -128 for the center																			
+		menuUI.addButton("Editor", "editor", WIDTH / 2 - 128, (int) (HEIGHT * 0.50f));
+		menuUI.addButton("Quit", "quit", WIDTH / 2 - 128, (int) (HEIGHT * 0.60f));
 	}
 
 	private void updateButtons() {

@@ -1,8 +1,12 @@
 package Data;
 
 import org.lwjgl.input.Keyboard;
+import static helpers.StateManager.setState;
 import org.lwjgl.input.Mouse;
 import helpers.Clock;
+import helpers.StateManager;
+import helpers.StateManager.GameState;
+
 import static helpers.Artist.*;
 import java.util.ArrayList;
 
@@ -12,7 +16,7 @@ public class Player {
 	private TileType[] types;
 	private WaveManager waveManager;
 	private ArrayList<Tower> towerList;
-	public static int Cash, Lives;
+	public static int Cash, Lives, Score;
 	private boolean leftMouseButtonDown, holdingTower;
 	private Tower tempTower;
 	// Since updated is too fast, so a click would be actually 4 clicks without
@@ -31,12 +35,14 @@ public class Player {
 		this.tempTower = null;
 		Cash = 0;
 		Lives = 0;
+		Score = 0;
 	}
 
-	// Initialize cash and lives
+	// Initialize cash and lives and score
 	public void setup() {
-		Cash = 200;
-		Lives = 10;
+		Cash = 100;
+		Lives = 2;
+		Score = 0;
 	}
 
 	//Check if we can afford the tower
@@ -46,6 +52,10 @@ public class Player {
 			return true;
 		}
 		return false;
+	}
+	
+	public static void modifyScore(int amount) {
+		Score += amount;
 	}
 
 	public static void modifyLives(int amount) {
@@ -59,6 +69,10 @@ public class Player {
 			tempTower.setX(getMouseTile().getX());
 			tempTower.setY(getMouseTile().getY());
 			tempTower.draw();
+		}
+		
+		if (Lives <= 0) {
+			StateManager.setState(GameState.MAINMENU);
 		}
 
 		// Update all towers in the game

@@ -10,7 +10,7 @@ public class Wave {
 	private float timeSinceLastSpawn, spawnTime;
 	private Enemy[] enemyTypes;
 	private CopyOnWriteArrayList<Enemy> enemyList; //because else towers keep shooting at enemy even if he is dead
-	private int enemiesPerWave, enemiesSpawned;
+	private int enemiesPerWave = 3, enemiesSpawned;
 	private boolean waveCompleted;
 
 	public Wave(Enemy[] enemyTypes, float spawnTime, int enemiesPerWave) {
@@ -61,6 +61,10 @@ public class Wave {
 
 	public boolean isCompleted() {
 		return waveCompleted;
+	}
+	
+	public int getEnemiesPerWave() {
+		return enemiesPerWave;
 	}
 	
 	public CopyOnWriteArrayList<Enemy> getEnemyList() {

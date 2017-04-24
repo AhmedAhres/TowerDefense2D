@@ -23,7 +23,7 @@ public class Artist {
 	public static final int TILE_SIZE = 64;
 
 	public static void BeginSession() {
-		Display.setTitle("Tower Defense2D");
+		Display.setTitle("Power Towers");
 		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 			Display.create();

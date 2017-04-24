@@ -22,10 +22,10 @@ public class Game {
 	public Game(TileGrid grid) {
 		this.grid = grid;
 		enemyTypes = new Enemy[3];
-		enemyTypes[0] = new EnemyAlien(2, 0, grid);
-		enemyTypes[1] = new EnemyUFO(2, 0, grid);
-		enemyTypes[2] = new EnemyPlane(2, 0, grid);
-		waveManager = new WaveManager(enemyTypes, 3, 3);
+		enemyTypes[0] = new EnemyAlien(0, 4, grid);
+		enemyTypes[1] = new EnemyUFO(0, 4, grid);
+		enemyTypes[2] = new EnemyPlane(0, 4, grid);
+		waveManager = new WaveManager(enemyTypes, 2, 2);
 		player = new Player(grid, waveManager);
 		player.setup();
 		this.menuBackground = QuickLoad("towers");
@@ -42,9 +42,10 @@ public class Game {
 
 	private void updateUI() {
 		gameUI.draw();
-		gameUI.drawString(1310, 400, "Lives: " + Player.Lives);
-		gameUI.drawString(1310, 450, "Cash: " + Player.Cash);
-		gameUI.drawString(1310, 500, "Wave: " + waveManager.getWaveNumber());
+		gameUI.drawString(1310, 300, "Score: " + Player.Score);
+		gameUI.drawString(1310, 370, "Cash: " + Player.Cash);
+		gameUI.drawString(1310, 440, "Lives: " + Player.Lives);
+		gameUI.drawString(1310, 510, "Wave: " + waveManager.getWaveNumber());
 
 		if (Mouse.next()) {
 			// Left click
