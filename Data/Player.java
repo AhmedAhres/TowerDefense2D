@@ -1,6 +1,7 @@
 package Data;
 
 import org.lwjgl.input.Keyboard;
+import Data.WaveManager;
 import static helpers.StateManager.setState;
 import org.lwjgl.input.Mouse;
 import helpers.Clock;
@@ -40,8 +41,8 @@ public class Player {
 
 	// Initialize cash and lives and score
 	public void setup() {
-		Cash = 100;
-		Lives = 2;
+		Cash = 30;
+		Lives = 1;
 		Score = 0;
 	}
 
@@ -69,10 +70,6 @@ public class Player {
 			tempTower.setX(getMouseTile().getX());
 			tempTower.setY(getMouseTile().getY());
 			tempTower.draw();
-		}
-		
-		if (Lives <= 0) {
-			StateManager.setState(GameState.MAINMENU);
 		}
 
 		// Update all towers in the game

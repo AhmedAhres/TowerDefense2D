@@ -6,6 +6,7 @@ public class EnemyPlane extends Enemy {
 		super(tileX, tileY, grid);
 		this.setTexture("plane");
 		this.setSpeed(90f);
+		this.setHealth(40);
 	}
 	
 }

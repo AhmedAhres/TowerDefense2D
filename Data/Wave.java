@@ -1,6 +1,7 @@
 package Data;
 
 import static helpers.Clock.Delta;
+import Data.WaveManager;
 
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -10,7 +11,7 @@ public class Wave {
 	private float timeSinceLastSpawn, spawnTime;
 	private Enemy[] enemyTypes;
 	private CopyOnWriteArrayList<Enemy> enemyList; //because else towers keep shooting at enemy even if he is dead
-	private int enemiesPerWave = 3, enemiesSpawned;
+	private int enemiesPerWave, enemiesSpawned;
 	private boolean waveCompleted;
 
 	public Wave(Enemy[] enemyTypes, float spawnTime, int enemiesPerWave) {
